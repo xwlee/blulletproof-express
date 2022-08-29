@@ -1,0 +1,16 @@
+2022-08-26T07:27:48.185Z [user-service][info] : [CUSTOM] ::1 - - [26/Aug/2022:07:27:48 +0000] "POST /user HTTP/1.1" 200 51 "-" "PostmanRuntime/7.29.2"
+ {}
+2022-08-26T07:27:48.533Z [user-service][info] : [CUSTOM] ::1 - - [26/Aug/2022:07:27:48 +0000] "POST /user HTTP/1.1" 200 51 "-" "PostmanRuntime/7.29.2"
+ {}
+2022-08-26T07:27:48.889Z [user-service][info] : [CUSTOM] ::1 - - [26/Aug/2022:07:27:48 +0000] "POST /user HTTP/1.1" 200 51 "-" "PostmanRuntime/7.29.2"
+ {}
+2022-08-26T07:47:24.782Z [user-service][info] : [CUSTOM] ::1 - - [26/Aug/2022:07:47:24 +0000] "POST /user HTTP/1.1" 200 51 "-" "PostmanRuntime/7.29.2"
+ {}
+2022-08-26T07:47:26.018Z [user-service][info] : [CUSTOM] ::1 - - [26/Aug/2022:07:47:26 +0000] "POST /user HTTP/1.1" 200 51 "-" "PostmanRuntime/7.29.2"
+ {}
+2022-08-26T13:40:15.161Z [user-service][info] : [CUSTOM] ::1 - - [26/Aug/2022:13:40:15 +0000] "POST /user?a=1&b=2 HTTP/1.1" 500 21 "-" "PostmanRuntime/7.29.2"
+ {}
+2022-08-26T13:40:31.632Z [user-service][info] : [CUSTOM] ::1 - - [26/Aug/2022:13:40:31 +0000] "POST /user?a=1&b=2 HTTP/1.1" 500 21 "-" "PostmanRuntime/7.29.2"
+ {}
+2022-08-27T01:50:52.664Z [user-service][error] : [CUSTOM] ::1 - POST /user?a=1&b=2 500 - 2.504 ms {}
+2022-08-27T01:51:00.155Z [user-service][error] : [CUSTOM] ::1 - POST /user?a=1&b=2 500 - 0.697 ms {}
