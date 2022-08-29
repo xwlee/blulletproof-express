@@ -1,5 +1,6 @@
 # The folder structure
 
+```shell
 src
 │ app.js # App entry point
 └───api # Express route controllers for all the endpoints of the app
@@ -10,3 +11,4 @@ src
 └───services # All the business logic is here
 └───subscribers # Event handlers for async task
 └───types # Type declaration files (d.ts) for Typescript
+```
