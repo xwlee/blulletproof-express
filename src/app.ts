@@ -1,12 +1,13 @@
+import cors from 'cors';
 import express, { Request } from 'express';
 import helmet from 'helmet';
-import cors from 'cors';
+import status from 'http-status';
 
-import userRoutes from './user';
+import authRoute from './auth';
 import errorHandler from './common/middleware/error';
 import morgan from './common/middleware/morgan';
-
-const port = process.env.PORT || 8080;
+import ApiError from './common/utils/ApiError';
+import userRoute from './user';
 
 const app = express();
 
@@ -28,8 +29,15 @@ app.use(express.json());
 // Set various security HTTP headers
 app.use(helmet());
 
-app.use('/', userRoutes);
+app.use('/', userRoute);
+app.use('/', authRoute);
 
+// Handle error
 app.use(errorHandler);
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+// Handle unknown request
+app.use((_req, _res, next) => {
+  next(new ApiError(status.NOT_FOUND, 'Not found'));
+});
+
+export default app;

@@ -1,15 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
-import logger from '../../logger';
 import status from 'http-status';
+
 import ApiError from '../utils/ApiError';
 
 const errorHandler = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction,
 ) => {
-  res.locals.errorMessage = err.stack;
+  res.locals.err = err;
 
   const statusCode =
     err instanceof ApiError ? err.statusCode : status.INTERNAL_SERVER_ERROR;
@@ -21,7 +22,7 @@ const errorHandler = (
   const response = {
     code: statusCode,
     message,
-    stack: err.stack,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   };
 
   return res.status(statusCode).send(response);

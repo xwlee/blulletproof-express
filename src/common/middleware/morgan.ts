@@ -1,27 +1,65 @@
-import morgan from 'morgan';
-import logger from '../../logger';
 import { Request, Response } from 'express';
+import morgan, { TokenIndexer } from 'morgan';
+
+import logger from '../service/logger.service';
 
 morgan.token(
-  'message',
-  (_req: Request, res: Response) => res.locals.errorMessage || '',
+  'error',
+  (_req: Request, res: Response) => res.locals.err?.stack ?? '',
 );
 morgan.token('body', (req: Request) => {
   return JSON.stringify(req.body);
 });
 
-const getIpFormat = () => ':remote-addr - ';
-const successResponseFormat = `${getIpFormat()}:method :url :body :status - :response-time ms`;
-const errorResponseFormat = `${getIpFormat()}:method :url :body :status - :response-time ms - message: :message`;
+const successResponseFormat = (
+  tokens: TokenIndexer<Request, Response>,
+  req: Request,
+  res: Response,
+) => {
+  return JSON.stringify({
+    request: {
+      remote_addr: tokens['remote-addr'](req, res),
+      method: tokens['method'](req, res),
+      url: tokens['url'](req, res),
+      body: tokens['body'](req, res),
+      response_time: `${tokens['response-time'](req, res)} ms`,
+    },
+  });
+};
+
+const errorResponseFormat = (
+  tokens: TokenIndexer<Request, Response>,
+  req: Request,
+  res: Response,
+) => {
+  return JSON.stringify({
+    request: {
+      remote_addr: tokens['remote-addr'](req, res),
+      method: tokens['method'](req, res),
+      url: tokens['url'](req, res),
+      body: tokens['body'](req, res),
+      response_time: `${tokens['response-time'](req, res)} ms`,
+    },
+    error: tokens['error'](req, res),
+  });
+};
 
 const successHandler = morgan(successResponseFormat, {
-  skip: (req, res) => res.statusCode >= 400,
-  stream: { write: (message) => logger.info(message.trim()) },
+  skip: (_req, res) => res.statusCode >= 400,
+  stream: {
+    write: (info) => {
+      logger.info(JSON.parse(info));
+    },
+  },
 });
 
 const errorHandler = morgan(errorResponseFormat, {
-  skip: (req, res) => res.statusCode < 400,
-  stream: { write: (message) => logger.error(message.trim()) },
+  skip: (_req, res) => res.statusCode < 400,
+  stream: {
+    write: (info) => {
+      logger.error(JSON.parse(info));
+    },
+  },
 });
 
 export default {
