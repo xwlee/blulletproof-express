@@ -3,11 +3,10 @@ import express, { Request } from 'express';
 import helmet from 'helmet';
 import status from 'http-status';
 
-import authRoute from './auth';
 import errorHandler from './common/middleware/error';
 import morgan from './common/middleware/morgan';
 import ApiError from './common/utils/ApiError';
-import userRoute from './user';
+import route from './route';
 
 const app = express();
 
@@ -29,15 +28,15 @@ app.use(express.json());
 // Set various security HTTP headers
 app.use(helmet());
 
-app.use('/', userRoute);
-app.use('/', authRoute);
-
-// Handle error
-app.use(errorHandler);
+// Add versioning
+app.use('/v1', route);
 
 // Handle unknown request
 app.use((_req, _res, next) => {
   next(new ApiError(status.NOT_FOUND, 'Not found'));
 });
+
+// Handle error
+app.use(errorHandler);
 
 export default app;

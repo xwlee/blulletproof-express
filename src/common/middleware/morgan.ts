@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import morgan, { TokenIndexer } from 'morgan';
+import morgan, { token, TokenIndexer } from 'morgan';
 
 import logger from '../service/logger.service';
 
@@ -22,6 +22,7 @@ const successResponseFormat = (
       method: tokens['method'](req, res),
       url: tokens['url'](req, res),
       body: tokens['body'](req, res),
+      status_coode: tokens['status'](req, res),
       response_time: `${tokens['response-time'](req, res)} ms`,
     },
   });
@@ -38,6 +39,7 @@ const errorResponseFormat = (
       method: tokens['method'](req, res),
       url: tokens['url'](req, res),
       body: tokens['body'](req, res),
+      status_coode: tokens['status'](req, res),
       response_time: `${tokens['response-time'](req, res)} ms`,
     },
     error: tokens['error'](req, res),

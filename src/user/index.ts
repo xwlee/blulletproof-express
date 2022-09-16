@@ -1,27 +1,32 @@
-import { Request, Response, NextFunction, Router } from 'express';
+import { Request, Response, Router } from 'express';
+import asyncHandler from 'express-async-handler';
 import status from 'http-status';
+import { z } from 'zod';
 
-import ApiError from '../common/utils/ApiError';
+import validate from '../common/middleware/validation';
 
-// import { signup } from './user-service';
+import userController from './user.controller';
+import userService from './user.service';
+import userValidation from './user.validation';
 
 const router = Router();
 
-router.get('/user', (_req: Request, _res: Response, next: NextFunction) => {
-  // try {
-  // throw new Error('invalid');
-  throw new ApiError(status.NOT_FOUND, 'User not found!!');
-  // } catch (e) {
-  // next(e);
-  // }
-});
+router.get(
+  '/users',
+  asyncHandler(async (_req: Request, res: Response) => {
+    // const users = await userService.users({});
+    // res.status(status.OK).json(users);
+  }),
+);
 
-router.post('/user', (req: Request, res: Response, next: NextFunction) => {
-  try {
-    return res.status(status.OK).send();
-  } catch (e) {
-    next(e);
-  }
-});
+router.post(
+  '/users',
+  validate(userValidation.createUser),
+  userController.createUser,
+);
+
+router.put('/users/:id', userController.updateUser);
+
+router.delete('/users/:id', userController.deleteUser);
 
 export default router;
