@@ -8,11 +8,7 @@ import userValidation from './user.validation';
 
 const createUser = asyncHandler(
   async (
-    req: Request<
-      unknown,
-      unknown,
-      z.infer<typeof userValidation.createUser>['body']
-    >,
+    req: Request<unknown, unknown, z.infer<typeof userValidation.createUser>['body']>,
     res: Response,
   ) => {
     const { name, email, password } = req.body;
@@ -27,15 +23,19 @@ const createUser = asyncHandler(
   },
 );
 
-const getUsers = asyncHandler(async (req: Request, res: Response) => {
-  const users = await userService.getUsers({
-    skip: req.query.skip,
-    take: req.query.take,
-    orderBy: req.query.orderBy,
-  });
-
-  res.status(status.OK).json(users);
-});
+const getUsers = asyncHandler(
+  async (
+    req: Request<unknown, unknown, unknown, z.infer<typeof userValidation.getUsers>['query']>,
+    res: Response,
+  ) => {
+    const { offset, limit } = req.query;
+    const users = await userService.getUsers({
+      skip: parseInt(offset, 10),
+      take: parseInt(limit, 10),
+    });
+    res.status(status.OK).json(users);
+  },
+);
 
 const updateUser = asyncHandler(
   async (
@@ -81,6 +81,7 @@ const deleteUser = asyncHandler(
 
 export default {
   createUser,
+  getUsers,
   updateUser,
   deleteUser,
 };

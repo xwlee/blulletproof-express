@@ -2,9 +2,7 @@ import { User, Prisma } from '@prisma/client';
 
 import prisma from '../prisma';
 
-const user = async (
-  userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-): Promise<User | null> => {
+const user = async (userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null> => {
   return await prisma.user.findUnique({
     where: userWhereUniqueInput,
   });
@@ -41,9 +39,7 @@ const updateUser = async (params: {
   });
 };
 
-const deleteUser = async (
-  where: Prisma.UserWhereUniqueInput,
-): Promise<User> => {
+const deleteUser = async (where: Prisma.UserWhereUniqueInput): Promise<User> => {
   return await prisma.user.delete({
     where,
   });
