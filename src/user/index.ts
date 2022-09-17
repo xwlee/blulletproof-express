@@ -7,12 +7,15 @@ import userValidation from './user.validation';
 
 const router = Router();
 
-router.get('/users', validate(userValidation.getUsers), userController.getUsers);
+router
+  .route('/users')
+  .post(validate(userValidation.createUser), userController.createUser)
+  .get(validate(userValidation.getUsers), userController.getUsers);
 
-router.post('/users', validate(userValidation.createUser), userController.createUser);
-
-router.put('/users/:id', userController.updateUser);
-
-router.delete('/users/:id', userController.deleteUser);
+router
+  .route('/users/:id')
+  .get(validate(userValidation.getUser), userController.getUser)
+  .put(validate(userValidation.updateUser), userController.updateUser)
+  .delete(validate(userValidation.deleteUser), userController.deleteUser);
 
 export default router;

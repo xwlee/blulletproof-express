@@ -1,16 +1,21 @@
-import { Request, Response } from 'express';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { NextFunction, Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import status from 'http-status';
-import { z } from 'zod';
+
+import ApiError from '../common/utils/ApiError';
 
 import userService from './user.service';
-import userValidation from './user.validation';
+import {
+  CreateUser,
+  DeleteUser,
+  GetUser,
+  GetUsers,
+  UpdateUser,
+} from './user.validation';
 
 const createUser = asyncHandler(
-  async (
-    req: Request<unknown, unknown, z.infer<typeof userValidation.createUser>['body']>,
-    res: Response,
-  ) => {
+  async (req: Request<unknown, unknown, CreateUser['body']>, res: Response) => {
     const { name, email, password } = req.body;
 
     const newUser = await userService.createUser({
@@ -25,7 +30,7 @@ const createUser = asyncHandler(
 
 const getUsers = asyncHandler(
   async (
-    req: Request<unknown, unknown, unknown, z.infer<typeof userValidation.getUsers>['query']>,
+    req: Request<unknown, unknown, unknown, GetUsers['query']>,
     res: Response,
   ) => {
     const { offset, limit } = req.query;
@@ -37,21 +42,27 @@ const getUsers = asyncHandler(
   },
 );
 
-const updateUser = asyncHandler(
-  async (
-    req: Request<{ id: string }, unknown, { name: string; games: string[] }>,
-    res: Response,
-  ) => {
-    const { name } = req.body;
+const getUser = asyncHandler(
+  async (req: Request<GetUser['params']>, res: Response) => {
     const { id } = req.params;
 
-    const updatedUser = await userService.updateUser({
-      where: {
-        id,
-      },
-      data: {
-        name,
-      },
+    const user = await userService.getUserById(id);
+
+    res.status(status.OK).json(user);
+  },
+);
+
+const updateUser = asyncHandler(
+  async (
+    req: Request<UpdateUser['params'], unknown, UpdateUser['body']>,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    const updatedUser = await userService.updateUserById(id, {
+      name,
     });
 
     res.status(status.OK).json(updatedUser);
@@ -59,29 +70,19 @@ const updateUser = asyncHandler(
 );
 
 const deleteUser = asyncHandler(
-  async (
-    req: Request<{ id: string }, unknown, { name: string; games: string[] }>,
-    res: Response,
-  ) => {
-    const { name } = req.body;
+  async (req: Request<DeleteUser['params']>, res: Response) => {
     const { id } = req.params;
 
-    const updatedUser = await userService.updateUser({
-      where: {
-        id,
-      },
-      data: {
-        name,
-      },
-    });
+    await userService.deleteUserById(id);
 
-    res.status(status.OK).json(updatedUser);
+    res.status(status.NO_CONTENT);
   },
 );
 
 export default {
   createUser,
   getUsers,
+  getUser,
   updateUser,
   deleteUser,
 };
