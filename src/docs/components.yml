@@ -1,0 +1,46 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+      example:
+        id: a000b6f1-60eb-4c74-84d6-cbe4e9f317c6
+        email: johndoe@example.com
+        name: John Doe
+        role: user
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 401
+            message: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 403
+            message: Forbidden

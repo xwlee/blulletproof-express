@@ -1,9 +1,6 @@
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { NextFunction, Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import status from 'http-status';
-
-import ApiError from '../common/utils/ApiError';
 
 import userService from './user.service';
 import {
