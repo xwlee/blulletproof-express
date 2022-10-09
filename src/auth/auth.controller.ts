@@ -8,7 +8,14 @@ import config from '../config/config';
 import userService from '../user/user.service';
 
 import authService from './auth.service';
-import { ForgotPassword, Login, Logout, RefreshTokens, Register } from './auth.validation';
+import {
+  ForgotPassword,
+  Login,
+  Logout,
+  RefreshTokens,
+  Register,
+  ResetPassword,
+} from './auth.validation';
 import tokenService from './token.service';
 
 const register = asyncHandler(
@@ -67,9 +74,15 @@ const forgotPassword = asyncHandler(
   },
 );
 
-const resetPassword = (req: Request, res: Response) => {
-  return res.status(200).send('refreshTokens');
-};
+const resetPassword = asyncHandler(
+  async (
+    req: Request<unknown, unknown, ResetPassword['body'], ResetPassword['query']>,
+    res: Response,
+  ) => {
+    await authService.resetPassword(req.query.token, req.body.password);
+    res.sendStatus(httpStatus.NO_CONTENT);
+  },
+);
 
 export default {
   register,

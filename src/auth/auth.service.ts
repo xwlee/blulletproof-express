@@ -1,5 +1,6 @@
 import { TokenType, User } from '@prisma/client';
 import httpStatus from 'http-status';
+import { token } from 'morgan';
 
 import ApiError from '../common/utils/ApiError';
 import prisma from '../prisma';
@@ -68,9 +69,30 @@ const resetPassword = async (resetPasswordToken: string, newPassword: string) =>
   });
 };
 
+const verifyEmail = async (verifyEmailToken: string): Promise<void> => {
+  // Make sure the token exists
+  const verifyEmailTokenDoc = await tokenService.verifyToken(
+    verifyEmailToken,
+    TokenType.VERIFY_EMAIL,
+  );
+  // Make sure the associated user exists
+  const user = await userService.getUserById(verifyEmailTokenDoc.userId);
+  if (!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
+  }
+  await userService.updateUserById(user.id, { isEmailVerified: true });
+  await prisma.token.deleteMany({
+    where: {
+      userId: user.id,
+      type: TokenType.VERIFY_EMAIL,
+    },
+  });
+};
+
 export default {
   loginUserWithEmailAndPassword,
   logout,
   refreshAuthToken,
   resetPassword,
+  verifyEmail,
 };
