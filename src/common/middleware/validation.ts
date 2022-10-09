@@ -5,7 +5,8 @@ import { Schema } from 'zod';
 import ApiError from '../utils/ApiError';
 
 const validate =
-  (schema: Schema) => (req: Request, _res: Response, next: NextFunction) => {
+  (schema: Schema) =>
+  (req: Request<unknown, unknown, unknown, unknown>, _res: Response, next: NextFunction) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { params, query, body } = req;
     const result = schema.safeParse({
@@ -16,10 +17,7 @@ const validate =
     });
 
     if (!result.success) {
-      throw new ApiError(
-        status.BAD_REQUEST,
-        JSON.stringify(result.error.issues),
-      );
+      throw new ApiError(status.BAD_REQUEST, JSON.stringify(result.error.issues));
     }
     Object.assign(req, result.data);
 

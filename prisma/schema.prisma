@@ -25,3 +25,21 @@ enum Role {
   USER
   ADMIN
 }
+
+model Token {
+  id Int @id @default(autoincrement())
+  token String
+  userId String
+  type TokenType
+  expires DateTime
+  blacklisted Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+  RESET_PASSWORD
+  VERIFY_EMAIL
+}

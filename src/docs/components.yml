@@ -12,12 +12,20 @@ components:
         role:
           type: string
           enum: [user, admin]
+        isEmailVerified:
+          type: boolean
+        createdAt:
+          type: date-time
+        updatedAt:
+          type: date-time
       example:
         id: a000b6f1-60eb-4c74-84d6-cbe4e9f317c6
         email: johndoe@example.com
         name: John Doe
         role: user
-
+        isEmailVerified: false
+        createdAt: 2022-09-18T14:56:42.798Z
+        updatedAt: 2022-09-18T14:56:42.798Z
     Error:
       type: object
       properties:
@@ -44,3 +52,12 @@ components:
           example:
             code: 403
             message: Forbidden
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: Not found

@@ -1,0 +1,5 @@
+-- AlterEnum
+ALTER TYPE "TokenType" ADD VALUE 'ACCESS';
+
+-- AlterTable
+ALTER TABLE "Token" ALTER COLUMN "userId" SET DATA TYPE TEXT;

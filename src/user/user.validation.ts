@@ -17,8 +17,26 @@ const createUser = z.object({
 
 const getUsers = z.object({
   query: z.object({
-    offset: z.string().regex(/^\d+$/, 'Offset must be a number').default('0'),
-    limit: z.string().regex(/^\d+$/, 'Limit must be a number').default('10'),
+    page: z
+      .preprocess(
+        (val) => parseInt(z.string().parse(val), 10),
+        z
+          .number({
+            invalid_type_error: 'Page must be a number',
+          })
+          .min(1), // If the value is set, must be > 1
+      )
+      .default('1'), // If the value is not set, default to 1
+    limit: z
+      .preprocess(
+        (val) => parseInt(z.string().parse(val), 10),
+        z
+          .number({
+            invalid_type_error: 'Limit must be a number',
+          })
+          .min(1), // If the value is set, must be > 1
+      )
+      .default('10'), // If the value is not set, default to 10
   }),
 });
 

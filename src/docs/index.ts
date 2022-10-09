@@ -12,7 +12,7 @@ const specs = swaggerJsdoc({
 });
 
 router.use(
-  '/',
+  '/docs',
   swaggerUi.serve,
   swaggerUi.setup(specs, {
     explorer: true,

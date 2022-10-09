@@ -6,15 +6,12 @@ import httpStatus from 'http-status';
 import ApiError from '../common/utils/ApiError';
 import prisma from '../prisma';
 
-function exclude<User, Key extends keyof User>(
-  user: User,
-  ...keys: Key[]
-): Omit<User, Key> {
+const exclude = <User, Key extends keyof User>(user: User, ...keys: Key[]): Omit<User, Key> => {
   for (const key of keys) {
     delete user[key];
   }
   return user;
-}
+};
 
 const isEmailTaken = async (email: string): Promise<boolean> => {
   const count = await prisma.user.count({
@@ -28,9 +25,7 @@ const isEmailTaken = async (email: string): Promise<boolean> => {
   return false;
 };
 
-const createUser = async (
-  data: Prisma.UserCreateInput,
-): Promise<Omit<User, 'password'>> => {
+const createUser = async (data: Prisma.UserCreateInput): Promise<Omit<User, 'password'>> => {
   if (await isEmailTaken(data.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
@@ -47,29 +42,52 @@ const createUser = async (
 };
 
 const getUsers = async (params: {
-  skip?: number;
-  take?: number;
-}): Promise<Omit<User, 'password'>[]> => {
-  const { skip, take } = params;
+  page: number;
+  limit: number;
+}): Promise<{
+  result: Omit<User, 'password'>[];
+  totalPage: number;
+  totalResult: number;
+}> => {
+  const { page, limit } = params;
+  const skip = (page - 1) * limit;
 
+  const usersCount = await prisma.user.count();
   const users = await prisma.user.findMany({
     skip,
-    take,
+    take: limit,
     orderBy: {
       createdAt: 'desc',
     },
   });
   const usersWithoutPassword = users.map((user) => exclude(user, 'password'));
 
-  return usersWithoutPassword;
+  return {
+    result: usersWithoutPassword,
+    totalPage: Math.ceil(usersCount / limit),
+    totalResult: usersCount,
+  };
 };
 
-const getUserById = async (
-  id: string,
-): Promise<Omit<User, 'password'> | null> => {
+const getUserById = async (id: string): Promise<Omit<User, 'password'> | null> => {
   const user = await prisma.user.findUnique({
     where: {
       id,
+    },
+  });
+
+  if (user) {
+    const userWithoutPassword = exclude(user, 'password');
+    return userWithoutPassword;
+  }
+
+  return null;
+};
+
+const getUserByEmail = async (email: string): Promise<Omit<User, 'password'> | null> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
     },
   });
 
@@ -100,10 +118,7 @@ const updateUserById = async (
     if (e instanceof PrismaClientKnownRequestError) {
       // Updating a record that doesn't exist
       if (e.code === 'P2025') {
-        throw new ApiError(
-          httpStatus.NOT_FOUND,
-          httpStatus[httpStatus.NOT_FOUND].toString(),
-        );
+        throw new ApiError(httpStatus.NOT_FOUND, httpStatus[httpStatus.NOT_FOUND].toString());
       }
     }
     throw e;
@@ -121,20 +136,39 @@ const deleteUserById = async (id: string): Promise<void> => {
     if (e instanceof PrismaClientKnownRequestError) {
       // Deleting a record that doesn't exist
       if (e.code === 'P2025') {
-        throw new ApiError(
-          httpStatus.NOT_FOUND,
-          httpStatus[httpStatus.NOT_FOUND].toString(),
-        );
+        throw new ApiError(httpStatus.NOT_FOUND, httpStatus[httpStatus.NOT_FOUND].toString());
       }
     }
     throw e;
   }
 };
 
+const _isPasswordMatch = async (password: string, user: User): Promise<boolean> => {
+  return bcrypt.compare(password, user.password);
+};
+
+const login = async (email: string, password: string): Promise<Omit<User, 'password'>> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user || !(await _isPasswordMatch(password, user))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+  }
+
+  const userWithoutPassword = exclude(user, 'password');
+
+  return userWithoutPassword;
+};
+
 export default {
   createUser,
   getUserById,
+  getUserByEmail,
   getUsers,
   updateUserById,
   deleteUserById,
+  login,
 };

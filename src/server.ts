@@ -1,11 +1,10 @@
 import './tracer';
 import app from './app';
 import logger from './common/service/logger.service';
+import config from './config/config';
 
-const port = process.env.PORT || 8080;
-
-const server = app.listen(port, () =>
-  logger.debug(`Server is running at http://localhost:${port}`),
+const server = app.listen(config.port, () =>
+  logger.debug(`Server is running at http://localhost:${config.port}`),
 );
 
 const exitHandler = () => {

@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
-import morgan, { token, TokenIndexer } from 'morgan';
+import morgan, { TokenIndexer } from 'morgan';
 
 import logger from '../service/logger.service';
 
-morgan.token(
-  'error',
-  (_req: Request, res: Response) => res.locals.err?.stack ?? '',
-);
+morgan.token('error', (_req: Request, res: Response) => res.locals.err?.stack ?? '');
 morgan.token('body', (req: Request) => {
   return JSON.stringify(req.body);
 });
