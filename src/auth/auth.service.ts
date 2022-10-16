@@ -52,10 +52,12 @@ const refreshAuthToken = async (refreshToken: string) => {
 };
 
 const resetPassword = async (resetPasswordToken: string, newPassword: string) => {
+  // Make sure the token exists
   const resetPasswordkTokenDoc = await tokenService.verifyToken(
     resetPasswordToken,
     TokenType.RESET_PASSWORD,
   );
+  // Make sure the associated user exists
   const user = await userService.getUserById(resetPasswordkTokenDoc.userId);
   if (!user) {
     throw new ApiError(httpStatus.UNAUTHORIZED, ' Password reset failed');

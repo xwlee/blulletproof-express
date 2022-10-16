@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import auth from '../common/middleware/auth';
 import validate from '../common/middleware/validation';
 
 import authController from './auth.controller';
@@ -20,5 +21,7 @@ router.post(
   validate(authValidation.forgotPassword),
   authController.forgotPassword,
 );
+router.post('/auth/send-verification-email', auth(), authController.sendVerificationEmail);
+router.post('/auth/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
 
 export default router;

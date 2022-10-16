@@ -48,12 +48,19 @@ const resetPassword = z.object({
   }),
 });
 
+const verifyEmail = z.object({
+  query: z.object({
+    token: z.string(),
+  }),
+});
+
 export type Register = z.infer<typeof register>;
 export type Login = z.infer<typeof login>;
 export type Logout = z.infer<typeof logout>;
 export type RefreshTokens = z.infer<typeof refreshTokens>;
 export type ForgotPassword = z.infer<typeof forgotPassword>;
 export type ResetPassword = z.infer<typeof resetPassword>;
+export type VerifyEmail = z.infer<typeof verifyEmail>;
 
 export default {
   register,
@@ -62,4 +69,5 @@ export default {
   refreshTokens,
   forgotPassword,
   resetPassword,
+  verifyEmail,
 };

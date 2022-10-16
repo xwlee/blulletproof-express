@@ -7,12 +7,10 @@ import ApiError from '../utils/ApiError';
 const validate =
   (schema: Schema) =>
   (req: Request<unknown, unknown, unknown, unknown>, _res: Response, next: NextFunction) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { params, query, body } = req;
     const result = schema.safeParse({
       params,
       query,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       body,
     });
 

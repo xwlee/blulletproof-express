@@ -2,7 +2,9 @@ import cors from 'cors';
 import express, { Request } from 'express';
 import helmet from 'helmet';
 import status from 'http-status';
+import passport from 'passport';
 
+import { jwtStrategy } from './auth/jwtStrategy';
 import errorHandler from './common/middleware/error';
 import morgan from './common/middleware/morgan';
 import ApiError from './common/utils/ApiError';
@@ -27,6 +29,10 @@ app.use(express.json());
 
 // Set various security HTTP headers
 app.use(helmet());
+
+// jwt authentication
+app.use(passport.initialize());
+passport.use('jwt', jwtStrategy);
 
 // Add versioning
 app.use('/v1', route);
